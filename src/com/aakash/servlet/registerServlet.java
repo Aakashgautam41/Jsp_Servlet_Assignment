@@ -9,6 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -23,23 +24,6 @@ import javax.servlet.http.HttpServletResponse;
 public class registerServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	/*@Override
-	public void init(ServletConfig config) throws ServletException {
-		Connection connection = null;
-		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
-			System.out.println("class found");
-			connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/USER_DETAILS","root","root");
-			System.out.println("connection created..!"+connection);
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		System.out.println("connection created..end!"+connection);
-		super.init(config);
-	}*/
-	
     /**
      * @see HttpServlet#HttpServlet()
      */
@@ -53,20 +37,28 @@ public class registerServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		response.getWriter().append("Served at: ").append(request.getContextPath());
+		response.getWriter().append("Served at : ").append(request.getContextPath());
 	}
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		// Form data
+		String firstName = request.getParameter("fname");
+		String lastName = request.getParameter("lname");
+		String email = request.getParameter("email");
+		String password = request.getParameter("password");
+		String zipCode = request.getParameter("zip");
+
 			
 		//Step1 Set content type
 		response.setContentType("text/html");
 		
 		//Step2 Get PrintWriter
 		PrintWriter out = response.getWriter();
-
+		
 		//Step3 Dynamic content
 		
 		try {
@@ -74,33 +66,37 @@ public class registerServlet extends HttpServlet {
 			//1. Get a connection to the database
 			Class.forName("com.mysql.cj.jdbc.Driver");
 			Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/USER_DETAILS","root","root");
-			out.println("connection created:"+connection);
+			//out.println("connection created:"+connection);
+			
 			//2. Create a prepared statement
 			PreparedStatement pStatement = connection.prepareStatement("INSERT INTO J1_ACCOUNT_MEMBER(FIRST_NAME, LAST_NAME, EMAIL, PASSWORD ) VALUES(?,?,?,?)");
 			
 			//3. Set the parameters
-			pStatement.setString(1,"John");
-			pStatement.setString(2,"Doe");
-			pStatement.setString(3,"john@gmail.com");
-			pStatement.setString(4,"123456");
+			pStatement.setString(1, firstName);
+			pStatement.setString(2, lastName);
+			pStatement.setString(3, email);
+			pStatement.setString(4, password);
 			
 			//4. Execute SQL query
 			//ResultSet result = pStatement.executeQuery();
-			int i= pStatement.executeUpdate();  
-			out.println(i+" records inserted");  
+			int i = pStatement.executeUpdate();  
+			//out.println( i +" records inserted");  
 			  
+			connection.commit();
 			connection.close();  
-           
 			
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
-		out.println("HAHAHA");
+		catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+		catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
 		
+		// Redirect user to login page
+		response.sendRedirect("form.jsp");
 	}
 
 }

@@ -14,18 +14,18 @@
     	<div class="jumbotron bg-white">
 		  <h1 class="display-4">Log In</h1>
 	    	<!-- Register Form -->
-			<form class="needs-validation hidden register-form" novalidate action="registerServlet" method="post">
+			<form class="needs-validation hidden register-form" novalidate  action="registerServlet"  method="post">
 			  <div class="form-row">
 			    <div class="col-md-3 mb-3">
 			      <label for="validationCustom01">First name</label>
-			      <input type="text" class="form-control" id="validationCustom01" placeholder="First name" value="Mark" required>
+			      <input type="text" class="form-control" id="validationCustom01" placeholder="First name"  name="fname" required >
 			      <div class="valid-feedback">
 			        Looks good!
 			      </div>
 			    </div>
 			    <div class="col-md-3 mb-3">
 			      <label for="validationCustom02">Last name</label>
-			      <input type="text" class="form-control" id="validationCustom02" placeholder="Last name" value="Otto" required>
+			      <input type="text" class="form-control" id="validationCustom02" placeholder="Last name" value="Otto"   name="lname"  required>
 			      <div class="valid-feedback">
 			        Looks good!
 			      </div>
@@ -36,7 +36,7 @@
 			        <div class="input-group-prepend">
 			          <span class="input-group-text" id="inputGroupPrepend">@</span>
 			        </div>
-			        <input type="email" class="form-control" id="validationCustomUsername" placeholder="Email" aria-describedby="inputGroupPrepend" required>
+			        <input type="email" class="form-control" id="validationCustomUsername" placeholder="Email" aria-describedby="inputGroupPrepend"  name="email"  required>
 			        <div class="invalid-feedback">
 			          Please enter a valid email.
 			        </div>
@@ -58,7 +58,7 @@
 			  <div class="form-row">
 			    <div class="col-md-6 mb-3">
 			      <label for="validationCustom03">Password</label>
-			      <input type="password" class="form-control" id="validationCustom03" placeholder="Password" required>
+			      <input type="password" class="form-control" id="validationCustom03" placeholder="Password"   name="password"  required>
 			      <div class="invalid-feedback">
 			       		Password must be 6 characters long
 			      </div>
@@ -72,7 +72,7 @@
 			    </div>
 			    <div class="col-md-3 mb-3">
 			      <label for="validationCustom05">Zip</label>
-			      <input type="text" class="form-control" id="validationCustom05" placeholder="Zip" required>
+			      <input type="text" class="form-control" id="validationCustom05" placeholder="Zip"   name="zip"  required>
 			      <div class="invalid-feedback">
 			        Please provide a valid zip.
 			      </div>
@@ -87,7 +87,7 @@
 	
 			    </div>
 			  </div>
-			  <button class="btn btn-primary" type="submit">Submit form</button>
+			  <button class="btn btn-primary" type="submit"  id="btnSubmit">Submit form</button>
 			  <div>
 			  	<span class="form-triggers"><a href="#" id="login">Already have an account? Sign in instead.</a></span>
 			  </div>
@@ -157,11 +157,7 @@
 			$(".display-4").text("Log In");
 		});
 	</script>
-	<script>
-		
-	</script>
-	
-	
+
 	
 	
   </body>

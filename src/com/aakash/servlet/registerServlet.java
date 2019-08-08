@@ -2,6 +2,8 @@ package com.aakash.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -51,6 +53,7 @@ public class registerServlet extends HttpServlet {
 		String email = request.getParameter("email");
 		String password = request.getParameter("password");
 		String zipCode = request.getParameter("zip");
+		String  hashedPassword= "";
 
 			
 		//Step1 Set content type
@@ -61,6 +64,12 @@ public class registerServlet extends HttpServlet {
 		
 		//Step3 Dynamic content
 		
+		// Password Hashing
+		PasswordHash pass = new PasswordHash();
+		 hashedPassword = pass.hashPassword(password);
+		
+        
+        // Database Connection
 		try {
 			
 			//1. Get a connection to the database
@@ -75,7 +84,7 @@ public class registerServlet extends HttpServlet {
 			pStatement.setString(1, firstName);
 			pStatement.setString(2, lastName);
 			pStatement.setString(3, email);
-			pStatement.setString(4, password);
+			pStatement.setString(4, hashedPassword);
 			
 			//4. Execute SQL query
 			//ResultSet result = pStatement.executeQuery();

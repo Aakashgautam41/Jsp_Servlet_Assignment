@@ -21,9 +21,22 @@
 		      </li>
 		    </ul>
 		    <ul class="navbar-nav mr-5">
-		    <li class="nav-item">
-		        <a class="nav-link" href="form.jsp">Login/Register</a>
-	      	</li>
+		    	<% 
+	      		
+			      if(session.getAttribute("username") == null){  %>
+			    <li class="nav-item">
+			        <a class="nav-link" href="form.jsp">Login/Register</a>
+		      	</li>
+	      
+			    <%   } else {%>
+				  
+			      <li class="nav-item">
+			        <a class="nav-link" href="LogoutServlet">Logout</a>
+		      	</li>
+			    <%} %>
+			   
+	  
+	      	
 		    </ul>
 		  </div>
 		</nav>

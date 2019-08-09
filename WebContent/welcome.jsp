@@ -11,7 +11,13 @@
   	<%@ include file="navbar.jsp" %>   <!-- Navbar Component -->
   	
     <div class="container">
-    	Welcome,  		
+    	Welcome, <%
+    	
+    	//  Get username from session
+    	String username = (String) session.getAttribute("username");
+    	out.println( username);
+    	
+    	%> 		
     </div>
 
     <!-- Optional JavaScript -->

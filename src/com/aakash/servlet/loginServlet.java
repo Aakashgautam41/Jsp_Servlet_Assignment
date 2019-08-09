@@ -12,9 +12,11 @@ import java.sql.SQLException;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
  * Servlet implementation class loginServlet
@@ -83,6 +85,18 @@ public class loginServlet extends HttpServlet {
 			       
 			       if( isPasswordMatched) {
 						out.println("User found !!!");
+						
+						// Add Cookie
+				        Cookie cookie = new Cookie("username", fname );		//creating cookie object  
+				        response.addCookie(cookie);
+				        
+				        // Add Session
+				        HttpSession session = request.getSession();
+				        session.setAttribute("username", fname);
+				        
+						 // Redirect user to login page
+						response.sendRedirect("welcome.jsp");
+
 					}
 					else {
 						out.println(" Incorrect credentials  !!!");
@@ -92,10 +106,7 @@ public class loginServlet extends HttpServlet {
 		        catch (Exception e) {                                                                        
 		          e.printStackTrace();
 		        } 
-		        
-		     // Redirect user to login page
-				response.sendRedirect("welcome.jsp");
-
+		      
 	}
 
 }

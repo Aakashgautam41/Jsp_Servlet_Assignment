@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("/loginServlet")
 public class loginServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+
        
     /**
      * @see HttpServlet#HttpServlet()
@@ -60,82 +61,40 @@ public class loginServlet extends HttpServlet {
 				PrintWriter out = response.getWriter();
 				
 				//Step3 Dynamic content
-				
-				// Password Hashing
-		        try {
-		        	// Create MessageDigest instance for MD5
-					MessageDigest  md = MessageDigest.getInstance("MD5");
-					
-					 //Add password bytes to digest
-		            md.update(password.getBytes());
-		            
-		          //Get the hash's bytes
-		            byte[] bytes = md.digest();
-		            
-		          //Convert it to hexadecimal format
-		            StringBuilder sb = new StringBuilder();
-		            for(int i=0; i< bytes.length ;i++)
-		            {
-		                sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
-		            }
-		            
-		          //Get complete hashed password in hex format
-		             hashedPassword = sb.toString();
-		             out.println(hashedPassword);
-		            
-		            
-				} 
-		        catch (NoSuchAlgorithmException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
 		        
+				// Database Connection
+				// Get instance of Singleton class
+				JDBCSingleton  jdbc = JDBCSingleton.getInstance();  
 		        
-				try {
-					
-					//1. Get a connection to the database
-					Class.forName("com.mysql.cj.jdbc.Driver");
-					Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/USER_DETAILS","root","root");
-					//out.println("connection created:"+connection);
-					
-					//2. Create a prepared statement
-					PreparedStatement pStatement = connection.prepareStatement("SELECT  EMAIL, PASSWORD, FIRST_NAME  FROM J1_ACCOUNT_MEMBER WHERE EMAIL=  ?");
-					
-					//3. Set the parameters
-					pStatement.setString(1, email);
-	
-					
-					//4. Execute SQL query
-					ResultSet  result = pStatement.executeQuery();
-		
-					while (result.next()) {              										 // Position the cursor              
-						 storedEmail = result.getString(1);       				 // Retrieve the first column value
-						 storedPassword = result.getString(2);      		// Retrieve the first column value
-						 fname = result.getString(3);
-						 out.println("EmailRetrieved =  " + storedEmail + "Password retrieved =  " + storedPassword + " Name retrieved =  " + fname);
-						}
-					out.println(storedEmail.getClass().getName());
-					
-					if(  hashedPassword.equals( storedPassword) ) {
+		        try  {  
+		           ResultSet  rs = jdbc.view(email); 
+		           out.println(rs);
+			       while (rs.next()) {  
+	                        out.println("Name= " + rs.getString(3) + "\t" + "Email= " + rs.getString(1));
+	                        storedEmail = rs.getString(1);
+	                        storedPassword = rs.getString(2);
+	                        fname = rs.getString(3);
+	               } 
+			       
+			       
+			       // Instance of  password hash class
+			       PasswordHash hash = new PasswordHash();
+			       boolean isPasswordMatched = hash.checkPassword(password, storedPassword) ;
+			       
+			       if( isPasswordMatched) {
 						out.println("User found !!!");
 					}
 					else {
 						out.println(" Incorrect credentials  !!!");
 
 					}
-					result.close();   
-					connection.commit();
-					connection.close();  
-					
-				}
-				catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} 
-				catch (ClassNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} 
+		         } 
+		        catch (Exception e) {                                                                        
+		          e.printStackTrace();
+		        } 
+		        
+		     // Redirect user to login page
+				response.sendRedirect("welcome.jsp");
 
 	}
 

@@ -40,6 +40,8 @@ public class registerServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		response.getWriter().append("Served at : ").append(request.getContextPath());
+		
+		
 	}
 
 	/**
@@ -63,47 +65,24 @@ public class registerServlet extends HttpServlet {
 		PrintWriter out = response.getWriter();
 		
 		//Step3 Dynamic content
+		PasswordHash hash = new PasswordHash();
+		hashedPassword = hash.hashPassword(password);
 		
-		// Password Hashing
-		PasswordHash pass = new PasswordHash();
-		 hashedPassword = pass.hashPassword(password);
-		
-        
-        // Database Connection
-		try {
-			
-			//1. Get a connection to the database
-			Class.forName("com.mysql.cj.jdbc.Driver");
-			Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/USER_DETAILS","root","root");
-			//out.println("connection created:"+connection);
-			
-			//2. Create a prepared statement
-			PreparedStatement pStatement = connection.prepareStatement("INSERT INTO J1_ACCOUNT_MEMBER(FIRST_NAME, LAST_NAME, EMAIL, PASSWORD ) VALUES(?,?,?,?)");
-			
-			//3. Set the parameters
-			pStatement.setString(1, firstName);
-			pStatement.setString(2, lastName);
-			pStatement.setString(3, email);
-			pStatement.setString(4, hashedPassword);
-			
-			//4. Execute SQL query
-			//ResultSet result = pStatement.executeQuery();
-			int i = pStatement.executeUpdate();  
-			//out.println( i +" records inserted");  
-			  
-			connection.commit();
-			connection.close();  
-			
-		}
-		catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} 
-		catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} 
-		
+	     // Database Connection
+		// Get instance of Singleton class
+		JDBCSingleton  jdbc = JDBCSingleton.getInstance();
+		try {  
+           int i = jdbc.insert( firstName, lastName , email, hashedPassword );   //Insert Method in Singleton class
+            if ( i >0 ) {  
+            	out.println(" Data has been inserted successfully");  
+            }
+            else{  
+                out.println("Data has not been inserted ");      
+            }  
+        } catch (Exception e) {  
+        	out.println(e);  
+        } 
+	
 		// Redirect user to login page
 		response.sendRedirect("form.jsp");
 	}

@@ -52,10 +52,11 @@ public class registerServlet extends HttpServlet {
 		// Form data
 		String firstName = request.getParameter("fname");
 		String lastName = request.getParameter("lname");
-		String email = request.getParameter("email");
+		String email = request.getParameter("user-email_confirmation");
 		String password = request.getParameter("password");
 		String zipCode = request.getParameter("zip");
 		String  hashedPassword= "";
+		int userId = 0;
 
 			
 		//Step1 Set content type
@@ -65,15 +66,16 @@ public class registerServlet extends HttpServlet {
 		PrintWriter out = response.getWriter();
 		
 		//Step3 Dynamic content
-		PasswordHash hash = new PasswordHash();
-		hashedPassword = hash.hashPassword(password);
+		hashedPassword = PasswordHash.hashPassword(password);
 		
-	     // Database Connection
+	    // Database Connection
 		// Get instance of Singleton class
 		JDBCSingleton  jdbc = JDBCSingleton.getInstance();
+		
+		// Insert data in J1_ACCOUNT_MEMBER
 		try {  
-           int i = jdbc.insert( firstName, lastName , email, hashedPassword );   //Insert Method in Singleton class
-            if ( i >0 ) {  
+           int i = jdbc.insert( firstName, lastName , email, hashedPassword ); 
+            if ( i > 0 ) {  
             	out.println(" Data has been inserted successfully");  
             }
             else{  
@@ -82,6 +84,32 @@ public class registerServlet extends HttpServlet {
         } catch (Exception e) {  
         	out.println(e);  
         } 
+		
+		//Get email,password and fname and userId  from J1_ACCOUNT_MEMBER
+        try  {  
+	           ResultSet  rs = jdbc.view(email); 
+		       while (rs.next()) {  
+	                    userId = rs.getInt(4); 
+	           }
+         }
+	       catch (Exception e) {  
+	        	out.println(e);  
+	        }
+		
+		
+		// Insert entry in J1_LOGIN_AUDIT_TRAIL
+		try {  
+           int i = jdbc.insertLoginAudit(userId,email);
+            if ( i > 0 ) {  
+            	out.println(" Data has been inserted successfully in J1_LOGIN_AUDIT_TRAIL ");  
+            }
+            else{  
+                out.println("Data has not been inserted ");      
+            }  
+        } 
+		catch (Exception e) {  
+	        	out.println(e);  
+        }
 	
 		// Redirect user to login page
 		response.sendRedirect("form.jsp");

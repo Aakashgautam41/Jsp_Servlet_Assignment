@@ -41,7 +41,7 @@ public class LogoutServlet extends HttpServlet {
         HttpSession  session = request.getSession();  
         session.invalidate();  
         
-         response.sendRedirect("index.jsp");
+        response.sendRedirect("index.jsp");
         out.print("You are successfully logged out!");  
 		
 

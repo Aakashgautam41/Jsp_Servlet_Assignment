@@ -7,6 +7,17 @@
 span a:hover{
 	text-decoration: none;
 }
-.fa-think-peaks{
-	font-size:xx-large;
+.fa-grunt{
+	font-size: 2em;
+}
+.form-error {
+    display: block;
+    color: #f03434;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    line-height: 140%;
+	font-size: 13px;
+}
+.error-box{
+	display:block;
 }

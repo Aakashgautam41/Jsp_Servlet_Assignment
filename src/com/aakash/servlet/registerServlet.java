@@ -112,7 +112,7 @@ public class registerServlet extends HttpServlet {
         }
 	
 		// Redirect user to login page
-		response.sendRedirect("form.jsp");
+		response.sendRedirect("form");
 	}
 
 }

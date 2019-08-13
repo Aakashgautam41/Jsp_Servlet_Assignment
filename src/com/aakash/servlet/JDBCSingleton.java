@@ -1,6 +1,7 @@
 package com.aakash.servlet;
 import java.io.*;
 import java.sql.*;
+import java.util.Properties;
 
  
 // Create a JDBCSingleton class.

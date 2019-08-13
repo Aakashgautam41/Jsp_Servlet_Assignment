@@ -24,7 +24,7 @@
 	    	<% 
 		      if(session.getAttribute("username") == null){  %>
 			    <li class="nav-item">
-			        <a class="nav-link" href="form.jsp">Login/Register</a>
+			        <a class="nav-link" href="form">Login/Register</a>
 		      	</li>
       
 		    <% } else { %>

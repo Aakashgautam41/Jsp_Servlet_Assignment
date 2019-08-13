@@ -1,7 +1,11 @@
 package com.aakash.servlet;
 
 import java.util.*;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -76,7 +80,17 @@ public class loginServlet extends HttpServlet {
 			PrintWriter out = response.getWriter();
 			
 			//Step3 Dynamic content
-	        
+			Properties properties = new Properties();			
+			String  url = "/home/aakashgautam/Desktop/Java Files/Config.properties";
+			
+			InputStream inputStream = new FileInputStream(url);
+			properties.load(inputStream);
+			System.out.println(properties.getProperty("DB_URL"));
+			System.out.println(properties.getProperty("ACCOUNT_TABLE"));
+			System.out.println(properties.getProperty("ADDRESS_TABLE"));
+			System.out.println(properties.getProperty("LOGIN_AUDIT_TABLE"));
+			
+			       
 			// Get instance of Singleton class
 			JDBCSingleton jdbc = JDBCSingleton.getInstance();  
 	        
@@ -113,16 +127,16 @@ public class loginServlet extends HttpServlet {
 			    
 			    // Reset LOGIN_ATTEMPT to 0
 			    try {  
-		            int i = jdbc.updateLoginAudit(0, email);
-		            if ( i > 0 ) {  
-		            	System.out.println("LOGIN_ATTEMPT has been set to 0 in J1_LOGIN_AUDIT_TRAIL ");  
-		            }
-		            else{  
-		            	System.out.println("LOGIN_ATTEMPT has not been updated ");      
-		            }  
+			            int i = jdbc.updateLoginAudit(0, email);
+			            if ( i > 0 ) {  
+			            	System.out.println("LOGIN_ATTEMPT has been set to 0 in J1_LOGIN_AUDIT_TRAIL ");  
+			            }
+			            else{  
+			            	System.out.println("LOGIN_ATTEMPT has not been updated ");      
+			            }  
 		        } 
 				catch (Exception e) {  
-		        	out.println(e);  
+		        		out.println(e);  
 		        }
 			}
 			
@@ -153,7 +167,7 @@ public class loginServlet extends HttpServlet {
 				        session.setAttribute("username", fname);
 				        
 						// Redirect user to welcome page
-						response.sendRedirect("welcome.jsp");
+						response.sendRedirect("welcome");
 						
 						// Reset LOGIN_ATTEMPT to 0
 					    try {  
@@ -173,8 +187,8 @@ public class loginServlet extends HttpServlet {
 					else {
 						
 						// Redirect user to login page after failed login
-						response.sendRedirect("form.jsp");
-
+						response.sendRedirect("form");
+						    
 						//2. If password is incorrect then increase counter and store in table
 						loginAttempt = loginAttempt+1;
 						try {  

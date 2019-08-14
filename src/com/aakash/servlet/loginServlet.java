@@ -10,6 +10,8 @@ import java.io.PrintWriter;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.TimerTask;
+
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.Cookie;
@@ -17,6 +19,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
+import org.apache.log4j.Logger;
 
 
 
@@ -26,7 +30,7 @@ import javax.servlet.http.HttpSession;
 @WebServlet("/loginServlet")
 public class loginServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-
+    static final Logger LOGGER = Logger.getLogger(loginServlet.class);
        
     /**
      * @see HttpServlet#HttpServlet()
@@ -71,8 +75,11 @@ public class loginServlet extends HttpServlet {
 			int loginAttempt = 0;
 			int loginChances = 5;
 			int lockTime = 1000*60;
+			 LOGGER.info("This is a logging statement from log4j");
 			
-			
+			 if(PoolDemo.validate(email)) {
+				 LOGGER.info("Database pool is working");
+			}
 			//Step1 Set content type
 			response.setContentType("text/html");
 			
@@ -110,7 +117,9 @@ public class loginServlet extends HttpServlet {
 				TimerTask task = new TimerTask() {
 			    	@Override
 			        public void run() {
-			    		System.out.println("USER IS BLOCKED");
+			    		//set the error message request variable
+					    request.setAttribute("blockMessage","Your account has been blocked for "+ lockTime + "after " + loginChances + "failed attempts ");
+					    LOGGER.info("USER IS BLOCKED");
 			    	}
 				};
 				Timer timer = new Timer(true);
@@ -129,10 +138,10 @@ public class loginServlet extends HttpServlet {
 			    try {  
 			            int i = jdbc.updateLoginAudit(0, email);
 			            if ( i > 0 ) {  
-			            	System.out.println("LOGIN_ATTEMPT has been set to 0 in J1_LOGIN_AUDIT_TRAIL ");  
+			            	 LOGGER.info("LOGIN_ATTEMPT has been set to 0 in J1_LOGIN_AUDIT_TRAIL ");  
 			            }
 			            else{  
-			            	System.out.println("LOGIN_ATTEMPT has not been updated ");      
+			            	 LOGGER.info("LOGIN_ATTEMPT has not been updated ");      
 			            }  
 		        } 
 				catch (Exception e) {  
@@ -155,8 +164,8 @@ public class loginServlet extends HttpServlet {
 			       // Instance of PasswordHash class
 			       boolean isPasswordMatched = PasswordHash.checkPassword(password, storedPassword) ;
 			       
-			       if( isPasswordMatched) {
-			    	    System.out.println("User found !!!");
+			       if( isPasswordMatched &&  email.equals(storedEmail)) {
+			    	   LOGGER.info("User found !!!");
 						
 						// Add Cookie
 				        Cookie cookie = new Cookie("username", fname ); 
@@ -173,10 +182,10 @@ public class loginServlet extends HttpServlet {
 					    try {  
 				            int i = jdbc.updateLoginAudit(0, email);
 				            if ( i > 0 ) {  
-				            	System.out.println("LOGIN_ATTEMPT has been set to 0 in J1_LOGIN_AUDIT_TRAIL ");  
+				            	 LOGGER.info("LOGIN_ATTEMPT has been set to 0 in J1_LOGIN_AUDIT_TRAIL ");  
 				            }
 				            else{  
-				            	System.out.println("LOGIN_ATTEMPT has not been updated ");      
+				            	 LOGGER.info("LOGIN_ATTEMPT has not been updated ");      
 				            }  
 				        } catch (Exception e) {  
 				        	out.println(e);  
@@ -186,18 +195,23 @@ public class loginServlet extends HttpServlet {
 					}
 					else {
 						
+						//set the error message request variable
+					    request.setAttribute("errorMessage","Incorrect Email address or Password :(");
+						
 						// Redirect user to login page after failed login
-						response.sendRedirect("form");
-						    
+						//response.sendRedirect("form");
+					    RequestDispatcher rd=request.getRequestDispatcher("form");
+					    rd.forward(request,response);
+				
 						//2. If password is incorrect then increase counter and store in table
 						loginAttempt = loginAttempt+1;
 						try {  
 				            int i = jdbc.updateLoginAudit(loginAttempt, email);
 				            if ( i > 0 ) {  
-				            	System.out.println("Data has been updated successfully in J1_LOGIN_AUDIT_TRAIL ");  
+				            	 LOGGER.info("Data has been updated successfully in J1_LOGIN_AUDIT_TRAIL ");  
 				            }
 				            else{  
-				            	System.out.println("Data has not been updated ");      
+				            	 LOGGER.info("Data has not been updated ");      
 				            }  
 				        } 
 						catch (Exception e) {  

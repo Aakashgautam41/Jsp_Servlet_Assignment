@@ -39,6 +39,13 @@
     <servlet-name>TestServlet</servlet-name>
     <servlet-class>com.aakash.servlet.loginServlet</servlet-class>
 </servlet>
+
+  <servlet>  
+   <servlet-name>LoadPropsServlet</servlet-name>  
+   <servlet-class>com.aakash.servlet.LoadPropsServlet</servlet-class>  
+   <load-on-startup>1</load-on-startup>  
+  </servlet>  
+
   
   
   <welcome-file-list>

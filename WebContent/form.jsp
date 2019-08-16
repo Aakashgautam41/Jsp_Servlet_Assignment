@@ -11,7 +11,7 @@
    	<script>
 	  var isLoggedIn = "<%= (String)session.getAttribute("username")%>";
 	  if(isLoggedIn !== "null"){
-	      window.location.href="welcome.jsp";
+	      window.location.href="welcome";
 	  }
 	</script>
   </head>

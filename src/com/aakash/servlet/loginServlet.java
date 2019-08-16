@@ -2,10 +2,8 @@ package com.aakash.servlet;
 
 import java.util.*;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -30,6 +28,7 @@ import org.apache.log4j.Logger;
 @WebServlet("/loginServlet")
 public class loginServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	// Get instance of Log4j
     static final Logger LOGGER = Logger.getLogger(loginServlet.class);
        
     /**
@@ -54,7 +53,10 @@ public class loginServlet extends HttpServlet {
 			
 			if(session.getAttribute("username")!=null && session.getAttribute("username").equals(true))
 			{
-			   response.sendRedirect("welcome.jsp");
+			   response.sendRedirect("welcome");
+			}
+			else {
+				response.sendRedirect("form");
 			}
 	}
 
@@ -75,10 +77,11 @@ public class loginServlet extends HttpServlet {
 			int loginAttempt = 0;
 			int loginChances = 5;
 			int lockTime = 1000*60;
-			 LOGGER.info("This is a logging statement from log4j");
+			
+			 LOGGER.info("This is a logging statement from loginServlet");
 			
 			 if(PoolDemo.validate(email)) {
-				 LOGGER.info("Database pool is working");
+				// LOGGER.info("Database connection pool is working");
 			}
 			//Step1 Set content type
 			response.setContentType("text/html");
@@ -86,18 +89,7 @@ public class loginServlet extends HttpServlet {
 			//Step2 Get PrintWriter
 			PrintWriter out = response.getWriter();
 			
-			//Step3 Dynamic content
-			Properties properties = new Properties();			
-			String  url = "/home/aakashgautam/Desktop/Java Files/Config.properties";
-			
-			InputStream inputStream = new FileInputStream(url);
-			properties.load(inputStream);
-			System.out.println(properties.getProperty("DB_URL"));
-			System.out.println(properties.getProperty("ACCOUNT_TABLE"));
-			System.out.println(properties.getProperty("ADDRESS_TABLE"));
-			System.out.println(properties.getProperty("LOGIN_AUDIT_TABLE"));
-			
-			       
+			//Step3 Dynamic content  
 			// Get instance of Singleton class
 			JDBCSingleton jdbc = JDBCSingleton.getInstance();  
 	        
@@ -114,41 +106,51 @@ public class loginServlet extends HttpServlet {
 			
 			if(loginAttempt >= loginChances) {
 				//Block user
+				Timer timer = new Timer(true);
 				TimerTask task = new TimerTask() {
 			    	@Override
 			        public void run() {
-			    		//set the error message request variable
-					    request.setAttribute("blockMessage","Your account has been blocked for "+ lockTime + "after " + loginChances + "failed attempts ");
-					    LOGGER.info("USER IS BLOCKED");
+			    
+					    LOGGER.info("User is BLOCKED.");
 			    	}
 				};
-				Timer timer = new Timer(true);
-			    timer.schedule(task, 1000,1000);
+			
+			    timer.scheduleAtFixedRate(task, 1000,1000);
+			    timer.cancel();
 			    
 			    try {
 			        Thread.sleep(lockTime);
+			        timer.purge();
 			        
 			    } 
 			    catch (InterruptedException e) {
 			        e.printStackTrace();
 			    }
-			    timer.cancel();
+			    
 			    
 			    // Reset LOGIN_ATTEMPT to 0
 			    try {  
 			            int i = jdbc.updateLoginAudit(0, email);
 			            if ( i > 0 ) {  
-			            	 LOGGER.info("LOGIN_ATTEMPT has been set to 0 in J1_LOGIN_AUDIT_TRAIL ");  
+			            	 LOGGER.info("LOGIN_ATTEMPT has been set to 0 in J1_LOGIN_AUDIT_TRAIL");  
 			            }
 			            else{  
-			            	 LOGGER.info("LOGIN_ATTEMPT has not been updated ");      
+			            	 LOGGER.info("LOGIN_ATTEMPT has not been updated");      
 			            }  
 		        } 
 				catch (Exception e) {  
-		        		out.println(e);  
+						LOGGER.info(e);  
 		        }
+			    
+			    finally {
+			    	//set the error message request variable
+				    request.setAttribute("blockMessage","Your account has been locked for"+ lockTime + "hours");
+				    
+				    RequestDispatcher rd=request.getRequestDispatcher("form");
+				    rd.forward(request,response);
+			    }
 			}
-			
+			 
 			// When Login is successful
 			else {
 				//Get email,password and fname from j1_account_member
@@ -188,18 +190,18 @@ public class loginServlet extends HttpServlet {
 				            	 LOGGER.info("LOGIN_ATTEMPT has not been updated ");      
 				            }  
 				        } catch (Exception e) {  
-				        	out.println(e);  
+				        	LOGGER.info(e);  
 				        }
 						
 
 					}
 					else {
-						
+						 LOGGER.info("Login failed !! ");  
+						 
 						//set the error message request variable
-					    request.setAttribute("errorMessage","Incorrect Email address or Password :(");
+					    request.setAttribute("errorMessage","Incorrect Email address or Password &#9785;");
 						
 						// Redirect user to login page after failed login
-						//response.sendRedirect("form");
 					    RequestDispatcher rd=request.getRequestDispatcher("form");
 					    rd.forward(request,response);
 				

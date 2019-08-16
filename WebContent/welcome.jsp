@@ -9,7 +9,7 @@
   <script>  //Prevents unauthorized access to pages
 	  var isLoggedIn = "<%= (String)session.getAttribute("username")%>";
 	  if(isLoggedIn == "null"){
-	      window.location.href="form.jsp";
+	      window.location.href="form";
 	  }
   </script>
   <body>

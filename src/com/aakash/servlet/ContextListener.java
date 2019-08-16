@@ -23,7 +23,7 @@ public class ContextListener implements ServletContextListener {
         String fullPath = context.getRealPath("") + File.separator + log4jConfigFile;
          
         PropertyConfigurator.configure(fullPath);
-         
+   
     }
      
     @Override

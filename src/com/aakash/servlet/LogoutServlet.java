@@ -10,12 +10,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.log4j.Logger;
+
 /**
  * Servlet implementation class LogoutServlet
  */
 @WebServlet("/LogoutServlet")
 public class LogoutServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	// Get instance of Log4j
+    static final Logger LOGGER = Logger.getLogger(LogoutServlet.class);
        
     /**
      * @see HttpServlet#HttpServlet()
@@ -42,7 +46,9 @@ public class LogoutServlet extends HttpServlet {
         session.invalidate();  
         
         response.sendRedirect("index");
-        out.print("You are successfully logged out!");  
+        
+        LOGGER.info("This is a logging statement from logoutServlet");
+        LOGGER.info("You are successfully logged out!");  
 		
 
 	}

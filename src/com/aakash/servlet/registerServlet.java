@@ -19,12 +19,16 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
+
 /**
  * Servlet implementation class registerServlet
  */
 @WebServlet("/registerServlet")
 public class registerServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	// Get instance of Log4j
+    static final Logger LOGGER = Logger.getLogger(loginServlet.class);
 
     /**
      * @see HttpServlet#HttpServlet()
@@ -58,6 +62,7 @@ public class registerServlet extends HttpServlet {
 		String  hashedPassword= "";
 		int userId = 0;
 
+		 LOGGER.info("This is a logging statement from registerServlet");
 			
 		//Step1 Set content type
 		response.setContentType("text/html");
@@ -76,13 +81,13 @@ public class registerServlet extends HttpServlet {
 		try {  
            int i = jdbc.insert( firstName, lastName , email, hashedPassword ); 
             if ( i > 0 ) {  
-            	out.println(" Data has been inserted successfully");  
+            	 LOGGER.info(" Data has been inserted successfully in J1_ACCOUNT_MEMBER");  
             }
             else{  
-                out.println("Data has not been inserted ");      
+           	 	LOGGER.info("Data has not been inserted in J1_ACCOUNT_MEMBER ");      
             }  
         } catch (Exception e) {  
-        	out.println(e);  
+    	 	 	LOGGER.info(e);  
         } 
 		
 		//Get email,password and fname and userId  from J1_ACCOUNT_MEMBER
@@ -93,7 +98,7 @@ public class registerServlet extends HttpServlet {
 	           }
          }
 	       catch (Exception e) {  
-	        	out.println(e);  
+	   	 		LOGGER.info(e);  
 	        }
 		
 		
@@ -101,14 +106,14 @@ public class registerServlet extends HttpServlet {
 		try {  
            int i = jdbc.insertLoginAudit(userId,email);
             if ( i > 0 ) {  
-            	out.println(" Data has been inserted successfully in J1_LOGIN_AUDIT_TRAIL ");  
+           		LOGGER.info(" Data has been inserted successfully in J1_LOGIN_AUDIT_TRAIL ");  
             }
             else{  
-                out.println("Data has not been inserted ");      
+           	 	LOGGER.info("Data has not been inserted in J1_LOGIN_AUDIT_TRAIL");      
             }  
         } 
 		catch (Exception e) {  
-	        	out.println(e);  
+			 	LOGGER.info(e);  
         }
 	
 		// Redirect user to login page

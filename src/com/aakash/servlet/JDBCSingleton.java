@@ -3,20 +3,29 @@ import java.io.*;
 import java.sql.*;
 import java.util.Properties;
 
+import org.apache.log4j.Logger;
+
  
 // Create a JDBCSingleton class.
 public class JDBCSingleton {
 	
+	// Get instance of Log4j
+    static final Logger LOGGER = Logger.getLogger(JDBCSingleton.class);
+    
+    //Get instance of Properties
+    static Properties properties = Props.getProps();
 	
 	// Database details
-		static final String JDBC_DRIVER  = "com.mysql.cj.jdbc.Driver";
-		 static final String JDBC_DB_URL = "jdbc:mysql://localhost:3306/USER_DETAILS";
+		static final String JDBC_DRIVER  =  properties.getProperty("JDBC_DRIVER");
+		static final String JDBC_DB_URL = properties.getProperty("JDBC_DB_URL");
 	 
 	// JDBC Database Credentials
-	    static final String JDBC_USER = "root";
-	    static final String JDBC_PASS = "root";
-		String Account_Table = "J1_ACCOUNT_MEMBER";                                               
-		String Login_Trail_Table = " J1_LOGIN_AUDIT_TRAIL";
+	    static final String JDBC_USER = properties.getProperty("JDBC_USER");
+	    static final String JDBC_PASS = properties.getProperty("JDBC_PASS");
+		String ACCOUNT_TABLE = "J1_ACCOUNT_MEMBER";                                               
+		String LOGIN_TRAIL_TABLE = " J1_LOGIN_AUDIT_TRAIL";
+		
+		
 	
 	 // Static member holds only one instance of the JDBCSingleton class.  
 	 private static JDBCSingleton jdbc;  
@@ -28,6 +37,7 @@ public class JDBCSingleton {
      public static JDBCSingleton getInstance() {    
     	 if (jdbc == null){  
     		 jdbc = new JDBCSingleton();  
+    	     LOGGER.info("This is a logging statement from JDBCSingleton");
     	 }  
 	     return jdbc;  
      }  
@@ -42,6 +52,7 @@ public class JDBCSingleton {
     	
      }  
      
+     
      // To insert the record into table J1_ACCOUNT_MEMBER   
      public int insert(String fname,String lname, String email, String password) throws SQLException  
      {  
@@ -50,9 +61,9 @@ public class JDBCSingleton {
          int recordCounter = 0;  
            
          try {  
-        	 System.out.println("connection creation started for J1_ACCOUNT_MEMBER- insert()");
+        	 LOGGER.info("connection creation started for J1_ACCOUNT_MEMBER - insert()");
              c= this.getConnection();  
-             ps= c.prepareStatement("INSERT INTO  J1_ACCOUNT_MEMBER (FIRST_NAME, LAST_NAME, EMAIL, PASSWORD ) VALUES(?,?,?,?)");  
+             ps= c.prepareStatement("INSERT INTO "+ ACCOUNT_TABLE +" (FIRST_NAME, LAST_NAME, EMAIL, PASSWORD ) VALUES(?,?,?,?)");  
              ps.setString(1, fname);  
              ps.setString(2, lname);  
              ps.setString(3, email);  
@@ -61,7 +72,7 @@ public class JDBCSingleton {
                    
          } 
          catch (Exception e) { 
-        	 System.out.println("connection:"+ c);
+        	 LOGGER.info("connection:"+ c);
         	 e.printStackTrace();
     	 }
          finally{  
@@ -83,16 +94,16 @@ public class JDBCSingleton {
 	   ResultSet rs = null;  
                  
        try {
-    	   System.out.println("connection creation started for J1_ACCOUNT_MEMBER- view()");
+    	   LOGGER.info("connection creation started for J1_ACCOUNT_MEMBER - view()");
 		   connection = this.getConnection();  
-		   ps = connection.prepareStatement("SELECT  EMAIL, PASSWORD, FIRST_NAME, USER_ID  FROM  J1_ACCOUNT_MEMBER WHERE EMAIL=  ?");  
+		   ps = connection.prepareStatement("SELECT  EMAIL, PASSWORD, FIRST_NAME, USER_ID  FROM "+  ACCOUNT_TABLE +" WHERE EMAIL=  ?");  
 		   ps.setString(1, email);  
 		   rs=ps.executeQuery();  
-		   System.out.println(rs.getClass().getName());    
+		   LOGGER.info(rs.getClass().getName());    
        
        } 
        catch (Exception e) { 
-    	   System.out.println(e);
+    	   LOGGER.info(e);
 	   }  
 		return rs;  
      }
@@ -105,17 +116,17 @@ public class JDBCSingleton {
          int recordCounter = 0;  
          
          try {  
-        	 System.out.println("connection creation started for J1_LOGIN_AUDIT_TRAIL");
+        	 LOGGER.info("connection creation started for J1_LOGIN_AUDIT_TRAIL");
              c= this.getConnection();  
-             ps= c.prepareStatement("INSERT INTO"+ Login_Trail_Table +" ( USER_ID, EMAIL) VALUES (?,?)");  
+             ps= c.prepareStatement("INSERT INTO"+ LOGIN_TRAIL_TABLE +" ( USER_ID, EMAIL) VALUES (?,?)");  
              ps.setLong(1, userId);  
              ps.setString(2, email);  
              recordCounter = ps.executeUpdate();  
                    
          } 
          catch (Exception e) { 
-        	 System.out.println("connection:"+c);
-        	 e.printStackTrace();
+        	 LOGGER.info("connection:"+c);
+        	 LOGGER.info(e);
     	 }
          finally{  
            if ( ps!=null ){  
@@ -136,16 +147,16 @@ public class JDBCSingleton {
 	   ResultSet rs = null;  
                  
        try {
-    	   System.out.println("connection creation started for J1_LOGIN_AUDIT_TRAIL- viewLoginAudit()");
+    	   LOGGER.info("connection creation started for J1_LOGIN_AUDIT_TRAIL- viewLoginAudit()");
 		   connection = this.getConnection();  
-		   ps = connection.prepareStatement("SELECT LOGIN_ATTEMPT FROM "+  Login_Trail_Table +" WHERE EMAIL= ?");  
+		   ps = connection.prepareStatement("SELECT LOGIN_ATTEMPT FROM "+  LOGIN_TRAIL_TABLE +" WHERE EMAIL= ?");  
 		   ps.setString(1, email);  
 		   rs=ps.executeQuery();  
-		   System.out.println(rs.getClass().getName());    
+		   LOGGER.info(rs.getClass().getName());    
        
        } 
        catch (Exception e) { 
-    	   System.out.println(e);
+    	   LOGGER.info(e);
 	   }  
        
        return rs;  
@@ -159,17 +170,17 @@ public class JDBCSingleton {
          int recordCounter = 0;  
          
          try {  
-        	 System.out.println("connection creation started for J1_LOGIN_AUDIT_TRAIL -UPDATE");
+        	 LOGGER.info("connection creation started for J1_LOGIN_AUDIT_TRAIL -UPDATE");
              c= this.getConnection();  
-             ps= c.prepareStatement(" UPDATE " + Login_Trail_Table + " SET LOGIN_ATTEMPT = ? WHERE EMAIL = ?");  
+             ps= c.prepareStatement(" UPDATE " + LOGIN_TRAIL_TABLE + " SET LOGIN_ATTEMPT = ? WHERE EMAIL = ?");  
              ps.setLong(1, attemptCount);  
              ps.setString(2, email);  
              recordCounter = ps.executeUpdate();  
                    
          } 
          catch (Exception e) { 
-        	 System.out.println("connection:"+c);
-        	 e.printStackTrace();
+        	 LOGGER.info("connection:"+c);
+        	 LOGGER.info(e);
     	 }
          finally{  
            if ( ps!=null ){  

@@ -21,7 +21,7 @@ public class PoolDemo {
 			ps.setString(1, email);
 			rs = ps.executeQuery();
 			status = rs.next();
-			System.out.println("Database pooling ran");
+			//System.out.println("Database pooling ran");
 			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block

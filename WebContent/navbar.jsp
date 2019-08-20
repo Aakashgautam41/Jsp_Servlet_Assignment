@@ -30,7 +30,7 @@
 		    <% } else { %>
 				  
 	      	<li class="nav-item">
-		        <a class="nav-link" href="LogoutServlet">Logout</a>
+		         <form method="POST" action="LogoutServlet" id="logoutId" name="submitForm">   <a class="nav-link" href="javascript:document.submitForm.submit()">Logout</a> </form>
       		</li>
 		    <% } %>
 	      	

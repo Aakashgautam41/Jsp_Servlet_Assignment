@@ -28,7 +28,7 @@ import org.apache.log4j.Logger;
 public class registerServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	// Get instance of Log4j
-    static final Logger LOGGER = Logger.getLogger(loginServlet.class);
+    static final Logger LOGGER = Logger.getLogger(registerServlet.class);
 
     /**
      * @see HttpServlet#HttpServlet()
@@ -81,10 +81,10 @@ public class registerServlet extends HttpServlet {
 		try {  
            int i = jdbc.insert( firstName, lastName , email, hashedPassword ); 
             if ( i > 0 ) {  
-            	 LOGGER.info(" Data has been inserted successfully in J1_ACCOUNT_MEMBER");  
+            	 LOGGER.info(" User details  inserted successfully in J1_ACCOUNT_MEMBER");  
             }
             else{  
-           	 	LOGGER.info("Data has not been inserted in J1_ACCOUNT_MEMBER ");      
+           	 	LOGGER.info("User details not been inserted in J1_ACCOUNT_MEMBER ");      
             }  
         } catch (Exception e) {  
     	 	 	LOGGER.info(e);  
@@ -106,10 +106,10 @@ public class registerServlet extends HttpServlet {
 		try {  
            int i = jdbc.insertLoginAudit(userId,email);
             if ( i > 0 ) {  
-           		LOGGER.info(" Data has been inserted successfully in J1_LOGIN_AUDIT_TRAIL ");  
+           		LOGGER.info(" User details inserted in J1_LOGIN_AUDIT_TRAIL ");  
             }
             else{  
-           	 	LOGGER.info("Data has not been inserted in J1_LOGIN_AUDIT_TRAIL");      
+           	 	LOGGER.info("Data is not  inserted in J1_LOGIN_AUDIT_TRAIL");      
             }  
         } 
 		catch (Exception e) {  
@@ -118,6 +118,7 @@ public class registerServlet extends HttpServlet {
 	
 		// Redirect user to login page
 		response.sendRedirect("form");
+		LOGGER.info( firstName+": redirected to login form");   
 	}
 
 }

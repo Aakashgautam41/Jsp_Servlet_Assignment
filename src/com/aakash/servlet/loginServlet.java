@@ -48,6 +48,7 @@ public class loginServlet extends HttpServlet {
 			
 			//Step2 Get PrintWriter
 			PrintWriter out = response.getWriter();
+			
 			HttpSession session = request.getSession();
 			out.println(session.getAttribute("username"));
 			
@@ -167,18 +168,20 @@ public class loginServlet extends HttpServlet {
 			       boolean isPasswordMatched = PasswordHash.checkPassword(password, storedPassword) ;
 			       
 			       if( isPasswordMatched &&  email.equals(storedEmail)) {
-			    	   LOGGER.info("User found !!!");
+			    	   LOGGER.info( fname + "'s  password matched  !!");
 						
 						// Add Cookie
 				        Cookie cookie = new Cookie("username", fname ); 
 				        response.addCookie(cookie);
-				        
+				        LOGGER.info( fname + " : Cookies has been set");
 				        // Add Session
 				        HttpSession session = request.getSession();
 				        session.setAttribute("username", fname);
+				        LOGGER.info( fname + " : Session has been set");
 				        
 						// Redirect user to welcome page
 						response.sendRedirect("welcome");
+						LOGGER.info( fname + " : redirected to welcome page");
 						
 						// Reset LOGIN_ATTEMPT to 0
 					    try {  
@@ -196,7 +199,7 @@ public class loginServlet extends HttpServlet {
 
 					}
 					else {
-						 LOGGER.info("Login failed !! ");  
+						 LOGGER.info( fname + "'s login failed !! ");  
 						 
 						//set the error message request variable
 					    request.setAttribute("errorMessage","Incorrect Email address or Password &#9785;");
@@ -204,16 +207,17 @@ public class loginServlet extends HttpServlet {
 						// Redirect user to login page after failed login
 					    RequestDispatcher rd=request.getRequestDispatcher("form");
 					    rd.forward(request,response);
+					    LOGGER.info( fname + " : redirected to index page");
 				
 						//2. If password is incorrect then increase counter and store in table
 						loginAttempt = loginAttempt+1;
 						try {  
 				            int i = jdbc.updateLoginAudit(loginAttempt, email);
 				            if ( i > 0 ) {  
-				            	 LOGGER.info("Data has been updated successfully in J1_LOGIN_AUDIT_TRAIL ");  
+				            	 LOGGER.info("LOGIN_ATTEMPT count increased  in J1_LOGIN_AUDIT_TRAIL ");  
 				            }
 				            else{  
-				            	 LOGGER.info("Data has not been updated ");      
+				            	 LOGGER.info("LOGIN_ATTEMPT  has not been updated ");      
 				            }  
 				        } 
 						catch (Exception e) {  
